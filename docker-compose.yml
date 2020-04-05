@@ -1,0 +1,37 @@
+version: '3.4'
+
+services:
+  redis:
+    image: redis
+  web:
+    image: clock:latest
+    command: /bin/bash ./docker-entrypoint.sh
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      - "redis"
+    ports:
+      - 8000:8000
+    environment:
+      ENVIRONMENT: prod
+      REDIS_HOST: redis
+  celery:
+    image: clock:latest
+    command: celery -A ws worker --uid=nobody --gid=nogroup
+    depends_on:
+      - "redis"
+    environment:
+      ENVIRONMENT: prod
+      REDIS_HOST: redis
+  cron:
+    image: clock:latest
+    command: celery -A ws beat
+    depends_on:
+      - "redis"
+    environment:
+      ENVIRONMENT: prod
+      REDIS_HOST: redis

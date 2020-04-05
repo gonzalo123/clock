@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clock-cron
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: clock-cron
+      project: clock
+  template:
+    metadata:
+      labels:
+        app: clock-cron
+        project: clock
+    spec:
+      containers:
+        - name: clock-cron
+          image: my-ecr-path/clock:latest
+          args: ["celery", "-A", "ws", "beat"]
+          env:
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: clock-app-config
+                  key: redis.host
+

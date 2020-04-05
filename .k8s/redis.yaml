@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clock-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: clock-redis
+      project: clock
+  template:
+    metadata:
+      labels:
+        app: clock-redis
+        project: clock
+    spec:
+      containers:
+        - name: clock-redis
+          image: redis
+          ports:
+            - containerPort: 6379
+              name: clock-redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clock-redis
+spec:
+  type: ClusterIP
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: clock-redis

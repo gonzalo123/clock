@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clock-web-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: clock-web-api
+      project: clock
+  template:
+    metadata:
+      labels:
+        app: clock-web-api
+        project: clock
+    spec:
+      containers:
+        - name: web-api
+          image: my-ecr-path/clock:latest
+          args: ["uvicorn", "config.asgi:application", "--port", "8000", "--host", "0.0.0.0", "--workers", "1"]
+          ports:
+            - containerPort: 8000
+          env:
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: clock-app-config
+                  key: redis.host
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clock-web-api
+spec:
+  type: LoadBalancer
+  selector:
+    app: clock-web-api
+    project: clock
+  ports:
+    - protocol: TCP
+      port: 8000 # port exposed internally in the cluster
+      targetPort: 8000 # the container port to send requests to
