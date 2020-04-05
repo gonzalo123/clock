@@ -1,8 +1,8 @@
-## Deploying Django applications with authenticated Websockets using Channels into Docker and Kubernetes  
+## Building real time Python applications with Django Channels, Docker and Kubernetes
 
-Three years ago I wrote an article about webockets (https://gonzalo123.com/2017/01/02/playing-with-docker-silex-python-node-and-Websockets/). I fact I've written several articles about Websockets (Websockets and real time communications is something that I'm really passionate about), but today I would like to pick up this article. Nowadays I'm involved with several Django projects so I want to create a similar working prototye with Django. Let's start:
+Three years ago I wrote an article about Websockets (https://gonzalo123.com/2017/01/02/playing-with-docker-silex-python-node-and-Websockets/). In fact I've written several articles about Websockets (Websockets and real time communications is something that I'm really passionate about), but today I would like to pick up this article. Nowadays I'm involved with several Django projects so I want to create a similar working prototype with Django. Let's start:
 
-In the past I normally worked with libraries such as socket.io to ensure browser compatibility with Websockets but nowadays, at least in my world, we can assume that our users are using a modern browser with websocket support, so we're going to use plain Websockets instead external libraries. Django has a great support to Websockets with Django Channels. It allows us to to handle Websockets (and any other async protocols) thanks to Python's ASGI's specifications. In fact is pretty straightforward to build applications with real time applications with shared authentication (something that I have done in the past with a lot of effort. I'm getting old and now I like simple thigs :)
+In the past I normally worked with libraries such as socket.io to ensure browser compatibility with Websockets but nowadays, at least in my world, we can assume that our users are using a modern browser with websocket support, so we're going to use plain Websockets instead external libraries. Django has a great support to Websockets with Django Channels. It allows us to to handle Websockets (and any other async protocols) thanks to Python's ASGI's specifications. In fact is pretty straightforward to build applications with real time applications with shared authentication (something that I have done in the past with a lot of effort. I'm getting old and now I like simple things :)
 
 The application that I want to build is the following one: One Web application that shows the current time. Ok it's very simple to do it with a couple of javascript lines but this time I want to create a worker that emits an event via Websockets with the current time. My web application will show that real time update. This kind of architecture always have the same problem: The initial state. In this example we can ignore it. When the user opens the browser it must show the current time. As I said before in this example we can ignore this situation. We can wait until the next event to update the initial blank information but if the event arrives each 10 seconds our user'll have a blank screen until the next event arrives. In our example we're going to take into account this situation. Each time our user connect to the Websocket it will ask to the server for the initial state. 
 
@@ -375,7 +375,7 @@ data:
 We can deploy or application to our k8s cluster 
 > kubectl apply -f .k8s/
 
-And see it running inside the cluster locally with a port fordward
+And see it running inside the cluster locally with a port forward
 > kubectl port-forward deployment/clock-web-api 8000:8000
 
 And that's all. Our Django application with Websockets using Django Channels up and running with docker and also using k8s. 
